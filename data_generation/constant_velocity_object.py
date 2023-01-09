@@ -6,6 +6,15 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass
 
 @dataclass
+class Measurement:
+    """
+    Generic cartesian measurement for CVObjects
+    """
+    pos: np.ndarray
+    t: float
+    is_clutter: bool = None # Not available for real scenarios but used here to separate true and false measurements 
+
+@dataclass
 class CVObject:
     pos: np.ndarray = None
     vel: np.ndarray = None
@@ -26,6 +35,7 @@ class CVObject:
         self.pos += self.dt * self.vel + process_noise[:,0]
         self.vel += process_noise[:,1]
         self.t += self.dt
+        self.t = np.round(self.t, 5)
 
         self.track = np.append(self.track, self.current_gt(), axis=0)
 
