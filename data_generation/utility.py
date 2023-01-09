@@ -2,6 +2,8 @@ import numpy as np
 
 from constant_velocity_object import CVObject
 
+import csv
+
 def cv_object_from_r_theta(r, theta, id, sigma):
     return CVObject(np.array((-r * np.cos(theta), -r * np.sin(theta))),
                     np.array(((r/5)*np.cos(theta), (r/5)*np.sin(theta))),
@@ -45,4 +47,13 @@ def ground_truth_dat_from_cv_object(objects, n_steps, n_traj):
     t_death = n_steps * np.ones(n_traj)
 
     return X_gt, t_birth, t_death
-        
+
+def time_from_step(step: int, dt: float) -> float:
+    return np.round(step * dt, 5)
+
+
+def step_from_time(time: float, dt: float) -> int:
+    if dt == 0:
+        return 0
+
+    return int(time / dt)
