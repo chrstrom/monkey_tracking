@@ -4,21 +4,25 @@ from constant_velocity_object import CVObject
 
 import csv
 
-def cv_object_from_r_theta(r, theta, id, sigma):
-    return CVObject(np.array((-r * np.cos(theta), -r * np.sin(theta))),
-                    np.array(((r/5)*np.cos(theta), (r/5)*np.sin(theta))),
-                    id, sigma)
-    
 
-def ground_truth_csv_from_cv_object(objects, n_steps, title = ""):
+def cv_object_from_r_theta(r, theta, id, sigma):
+    return CVObject(
+        np.array((-r * np.cos(theta), -r * np.sin(theta))),
+        np.array(((r / 5) * np.cos(theta), (r / 5) * np.sin(theta))),
+        id,
+        sigma,
+    )
+
+
+def ground_truth_csv_from_cv_object(objects, n_steps, title=""):
 
     track_sorted_by_time = []
     for step in range(n_steps):
         tracks = []
-        
+
         for object in objects:
             tracks.append(object.track[step].tolist())
-        
+
         track_sorted_by_time.append(tracks)
 
     if title == "":
@@ -29,9 +33,10 @@ def ground_truth_csv_from_cv_object(objects, n_steps, title = ""):
 
             writer.writerows(step)
 
+
 def ground_truth_dat_from_cv_object(objects, n_steps, n_traj):
 
-    X_gt = np.empty((n_traj*4, n_steps))
+    X_gt = np.empty((n_traj * 4, n_steps))
 
     for step in range(n_steps):
         m_at_step = []
@@ -47,6 +52,7 @@ def ground_truth_dat_from_cv_object(objects, n_steps, n_traj):
     t_death = n_steps * np.ones(n_traj)
 
     return X_gt, t_birth, t_death
+
 
 def time_from_step(step: int, dt: float) -> float:
     return np.round(step * dt, 5)

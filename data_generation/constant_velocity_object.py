@@ -5,14 +5,17 @@ import matplotlib.pyplot as plt
 
 from dataclasses import dataclass
 
+
 @dataclass
 class Measurement:
     """
     Generic cartesian measurement for CVObjects
     """
+
     pos: np.ndarray
     t: float
-    is_clutter: bool = None # Not available for real scenarios but used here to separate true and false measurements 
+    is_clutter: bool = None  # Not available for real scenarios but used here to separate true and false measurements
+
 
 @dataclass
 class CVObject:
@@ -22,18 +25,31 @@ class CVObject:
     sigma: float = 1.0
     dt: float = 0.1
     t: float = 0
-    
+
     def __post_init__(self):
-        self.process_noise_matrix = self.sigma*np.array([[self.dt ** 3 / 3, self.dt ** 2 / 2], [self.dt ** 2 / 2, self.dt]])
+        self.process_noise_matrix = self.sigma * np.array(
+            [[self.dt**3 / 3, self.dt**2 / 2], [self.dt**2 / 2, self.dt]]
+        )
         self.track = np.array(self.current_gt())
-        
+
     def current_gt(self):
-        return [[int(self.id), self.pos[0], self.pos[1], self.vel[0], self.vel[1], np.round(self.t, 3)]]
-        
+        return [
+            [
+                int(self.id),
+                self.pos[0],
+                self.pos[1],
+                self.vel[0],
+                self.vel[1],
+                np.round(self.t, 3),
+            ]
+        ]
+
     def step(self):
-        process_noise = np.random.multivariate_normal([0, 0], self.process_noise_matrix, size=len(self.pos))
-        self.pos += self.dt * self.vel + process_noise[:,0]
-        self.vel += process_noise[:,1]
+        process_noise = np.random.multivariate_normal(
+            [0, 0], self.process_noise_matrix, size=len(self.pos)
+        )
+        self.pos += self.dt * self.vel + process_noise[:, 0]
+        self.vel += process_noise[:, 1]
         self.t += self.dt
         self.t = np.round(self.t, 5)
 
@@ -51,8 +67,6 @@ class CVObject:
         plt.plot(self.track[:, 1], self.track[:, 2])
         plt.scatter(self.track[0, 1], self.track[0, 2], marker="x")
 
-        #for i in range(int(self.t / self.dt)):
+        # for i in range(int(self.t / self.dt)):
         #    if i % 10 == 0 and i != 0:
         #        plt.scatter(self.track[i, 1], self.track[i, 2], s=10, marker="x", c="k")
-
-    
