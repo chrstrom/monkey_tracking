@@ -47,12 +47,14 @@ class BaseScenario:
     def _is_target_in_range(self, target):
         target_in_sensor_range = True
 
-        lmax = self.config.sensor.range.max
+        lmax = self.config.sensor.range.max 
         lmin = self.config.sensor.range.min
+        sx = self.config.sensor.position[0]
+        sy = self.config.sensor.position[1]
 
-        if not lmax > np.abs(target.track[-1, 1]) > lmin:
+        if not lmax > np.abs(target.track[-1, 1] - sx) > lmin:
             target_in_sensor_range = False
-        if not lmax > np.abs(target.track[-1, 2]) > lmin:
+        if not lmax > np.abs(target.track[-1, 2] - sy) > lmin:
             target_in_sensor_range = False
 
         return target_in_sensor_range
@@ -61,11 +63,10 @@ class BaseScenario:
         n_clutter = np.random.poisson(self.config.noise.clutter_intensity)
 
         clutter = []
-        for n in range(n_clutter):
-            # TODO: Account for sensor position
+        for _ in range(n_clutter):
             pos = np.random.uniform(
                 -self.config.sensor.range.max, self.config.sensor.range.max, (2,)
-            )
+            ) + np.array(self.config.sensor.position)
             measurement = Measurement(
                 pos, time_from_step(self.k, self.config.dt), is_clutter=True
             )
@@ -118,11 +119,11 @@ class BaseScenario:
         for _ in range(n_new_targets):
             self.alive_targets.append(self._new_cv_object())
 
-    def run(self, n_timesteps):
+    def run(self):
 
         hist_measurements = []
 
-        for _ in range(n_timesteps):
+        for _ in range(self.config.steps):
             self.step()  # Step ground truth targets
 
             # Generate true and false measurements and append to final list
@@ -188,7 +189,7 @@ if __name__ == "__main__":
 
     scenario = BaseScenario(config)
 
-    measurements, ground_truths = scenario.run(50)
+    measurements, ground_truths = scenario.run()
 
     for measurements_at_t in measurements:
         for measurement in measurements_at_t:
