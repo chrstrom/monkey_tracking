@@ -1,6 +1,6 @@
 import numpy as np
 
-from constant_velocity_object import CVObject
+from .constant_velocity_object import CVObject
 
 import csv
 

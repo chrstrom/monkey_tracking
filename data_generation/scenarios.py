@@ -3,10 +3,9 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
-from constant_velocity_object import CVObject, Measurement
-
-from utility import time_from_step
-from load_config import load_yaml_into_dotdict
+from .constant_velocity_object import CVObject, Measurement
+from .utility import time_from_step
+from .load_config import load_yaml_into_dotdict
 
 
 class BaseScenario:
@@ -47,7 +46,7 @@ class BaseScenario:
     def _is_target_in_range(self, target):
         target_in_sensor_range = True
 
-        lmax = self.config.sensor.range.max 
+        lmax = self.config.sensor.range.max
         lmin = self.config.sensor.range.min
         sx = self.config.sensor.position[0]
         sy = self.config.sensor.position[1]
